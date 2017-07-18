@@ -1,0 +1,57 @@
+.styled-text-area {
+    -fx-font-size: 1.5em;
+}
+
+.error {
+    -rtfx-background-color: lightpink;
+    -rtfx-underline-color: red;
+    -rtfx-underline-width: 0.2em;
+}
+
+.code-area-popup {
+    -fx-background-color: lightgray;
+    -fx-font-size: 1.5em;
+}
+
+/*General scala tokens*/
+
+.scala-syntax-Comment {
+    -fx-fill: grey;
+}
+.scala-syntax-At {
+    -fx-fill: limegreen;
+}
+.scala-syntax-RightArrow {
+    -fx-fill: limegreen;
+}
+.scala-syntax-Underscore {
+    -fx-fill: blue;
+}
+.scala-syntax-Colon {
+    -fx-fill: peachpuff;
+}
+.scala-syntax-Equals {
+    -fx-fill: salmon;
+}
+.scala-syntax-keyword {
+    -fx-fill: darkviolet;
+}
+
+.scala-syntax-constant-String {
+    -fx-fill: cadetblue;
+}
+
+.scala-syntax-interpolation-SpliceStart {
+    -fx-fill: fuchsia;
+}
+.scala-syntax-interpolation-SpliceEnd {
+    -fx-fill: fuchsia;
+}
+.scala-syntax-interpolation-Part {
+    -fx-fill: cornflowerblue;
+}
+.scala-syntax-interpolation-Id {
+    -fx-fill: orange;
+}
+
+/* Scala semantic ast */

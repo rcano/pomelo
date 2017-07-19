@@ -17,6 +17,8 @@ import org.fxmisc.richtext.model.{StyleSpansBuilder}
 import org.reactfx.EventStreams
 import scala.collection.JavaConverters._
 import scala.meta._
+import org.scalafmt.Scalafmt
+import org.scalafmt.config.{ScalafmtConfig, ScalafmtRunner}
 
 class Main extends Application {
   override def start(stage) = {
@@ -41,6 +43,9 @@ class Main extends Application {
                              settings,
                              new SeparatorMenuItem(),
                              exit)
+    
+    val formatCode = new MenuItem("Format Code")
+    editMenu.getItems.add(formatCode)
     
     //setup bottom status bar
     val statusBar = new HBox(4)
@@ -89,6 +94,11 @@ class Main extends Application {
         }
         codeArea.replaceText(0, codeArea.getText.length, selectedFile.toScala.contentAsString) 
       } catch { case e: Exception => notifyError(s"Failed reading file $selectedFile: $e")}
+    }
+    
+    formatCode.setOnAction { _ =>
+      val conf = ScalafmtConfig.default.copy(runner = ScalafmtRunner.default.copy(dialect = dialectComboBox.getSelectionModel.getSelectedItem))
+      Scalafmt.format(codeArea.getText, conf).toEither.fold(ex => ex.printStackTrace, res => codeArea.replaceText(res))
     }
 
     codeArea.caretPositionProperty.addListener { (prop, o, n) =>

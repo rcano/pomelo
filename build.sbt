@@ -9,7 +9,9 @@ fork := true
 scalacOptions ++= Seq("-deprecation", "-unchecked", "-feature", "-Yinfer-argument-types", "-Xlint", "-Ypartial-unification", "-opt:_", "-opt-warnings:_")
 
 libraryDependencies ++= Seq(
-  "org.scalameta" %% "scalameta" % "1.6.0",
+  "org.scalameta" %% "scalameta" % "1.7.0",
+  "com.geirsson" %% "scalafmt-core" % "1.1.0",
+  "com.geirsson" %% "scalafmt-cli" % "1.1.0",
   "com.chuusai" %% "shapeless" % "2.3.2",
   //"org.fxmisc.richtext" % "richtextfx" % "0.7-M5",
   "com.github.pathikrit" %% "better-files" % "2.17.1",

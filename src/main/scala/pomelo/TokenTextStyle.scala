@@ -1,16 +1,7 @@
 package pomelo
 
 import javafx.scene.paint.Color
-import shapeless._
-import shapeless.ops.maps.FromMap
-import shapeless.ops.record.ToMap
 
-object TokenTextStyle {
-  implicit val toMap = {
-    val g = LabelledGeneric[TokenTextStyle]
-    CaseClass2Map(g, ToMap[g.Repr], FromMap[g.Repr])
-  }
-}
 case class TokenTextStyle(font: String,
                           color: Color = Color.DIMGRAY.darker,
                           backgroundColor: Color = Color.WHITE,

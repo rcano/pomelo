@@ -67,7 +67,7 @@ class Main extends Application {
     //setup reaction to changes
     val dialectChanges = EventStreams.changesOf(dialectComboBox.getSelectionModel.selectedItemProperty)
     val stylesCalculator = Executors.newFixedThreadPool(1)
-    val textChanges = codeArea.plainTextChanges.filter(ch => !(ch.getInserted() == ch.getRemoved())).successionEnds(java.time.Duration.ofMillis(150))
+    val textChanges = codeArea.plainTextChanges.filter(ch => !(ch.getInserted() == ch.getRemoved())).successionEnds(java.time.Duration.ofMillis(100))
     EventStreams.merge(dialectChanges, textChanges).supplyTask (() => {
         val task = new Task[CodeArea => Unit] {
           override def call() = calculateStyleSpans(codeArea.getText(), dialectComboBox.getSelectionModel.getSelectedItem)

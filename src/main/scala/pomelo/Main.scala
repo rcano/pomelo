@@ -14,6 +14,7 @@ import javafx.stage.{FileChooser, Popup}
 import org.fxmisc.richtext.{CodeArea, LineNumberFactory, MouseOverTextEvent}
 import org.fxmisc.flowless.VirtualizedScrollPane
 import org.fxmisc.richtext.model.{StyleSpansBuilder}
+import org.fxmisc.wellbehaved.event.Nodes
 import org.reactfx.EventStreams
 import scala.meta._
 import org.scalafmt.Scalafmt
@@ -101,19 +102,8 @@ class Main extends Application {
     }
 
     val boundHeuristics = LiveEditionHeuristics.All.map(_(codeArea))
-    codeArea.plainTextChanges.filter(_ != null).subscribe { evt =>
-      evt.getInserted match {
-        case null => //ignore
-        case text if text.length == 1 =>
-          val char = text.head
-          boundHeuristics.foreach(h => if (h isDefinedAt char) h(char))
-        case _ =>
-      }
-    }
-//    codeArea.setOnKeyTyped { evt =>
-//      val char = evt.getCharacter.head
-//      boundHeuristics.foreach(h => if (h isDefinedAt char) h(char))
-//    }
+    boundHeuristics.foreach(h => Nodes.addInputMap(codeArea, h))
+    
     codeArea.caretPositionProperty.addListener { (prop, o, n) =>
       caretPositionLabel.setText(s"${n} - ${codeArea.getCurrentParagraph + 1}:${codeArea.getCaretColumn}")
     }

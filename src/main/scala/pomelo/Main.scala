@@ -10,12 +10,11 @@ import javafx.geometry.{Orientation, Pos}
 import javafx.scene.Scene
 import javafx.scene.control._
 import javafx.scene.layout._
-import javafx.stage.{FileChooser, Stage, Popup}
+import javafx.stage.{FileChooser, Popup}
 import org.fxmisc.richtext.{CodeArea, LineNumberFactory, MouseOverTextEvent}
 import org.fxmisc.flowless.VirtualizedScrollPane
 import org.fxmisc.richtext.model.{StyleSpansBuilder}
 import org.reactfx.EventStreams
-import scala.collection.JavaConverters._
 import scala.meta._
 import org.scalafmt.Scalafmt
 import org.scalafmt.config.{ScalafmtConfig, ScalafmtRunner}
@@ -101,6 +100,20 @@ class Main extends Application {
       Scalafmt.format(codeArea.getText, conf).toEither.fold(ex => ex.printStackTrace, res => codeArea.replaceText(res))
     }
 
+    val boundHeuristics = LiveEditionHeuristics.All.map(_(codeArea))
+    codeArea.plainTextChanges.filter(_ != null).subscribe { evt =>
+      evt.getInserted match {
+        case null => //ignore
+        case text if text.length == 1 =>
+          val char = text.head
+          boundHeuristics.foreach(h => if (h isDefinedAt char) h(char))
+        case _ =>
+      }
+    }
+//    codeArea.setOnKeyTyped { evt =>
+//      val char = evt.getCharacter.head
+//      boundHeuristics.foreach(h => if (h isDefinedAt char) h(char))
+//    }
     codeArea.caretPositionProperty.addListener { (prop, o, n) =>
       caretPositionLabel.setText(s"${n} - ${codeArea.getCurrentParagraph + 1}:${codeArea.getCaretColumn}")
     }

@@ -91,6 +91,11 @@ object LiveEditionHeuristics {
           case _ =>
         }
       }
-      ca.deletePreviousChar()
+      val selection = ca.getSelection
+      if(selection.getLength>0){
+        ca.deleteText(selection)
+      } else {
+        ca.deletePreviousChar()
+      }
     }: Consumer[KeyEvent])
 }

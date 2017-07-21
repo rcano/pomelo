@@ -75,7 +75,7 @@ object LiveEditionHeuristics {
       }
     }: java.util.function.Function[KeyEvent, InputHandler.Result])
   
-  val deleteClosingPair: Heuristic = ca => consume(
+  val deleteClosingPair: Heuristic = ca => process(
     keyPressed(KeyCode.BACK_SPACE),
     { evt => 
       val currentLine = ca.getParagraph(ca.getCurrentParagraph).getText
@@ -91,6 +91,6 @@ object LiveEditionHeuristics {
           case _ =>
         }
       }
-      ca.deletePreviousChar()
-    }: Consumer[KeyEvent])
+      InputHandler.Result.PROCEED
+    }: java.util.function.Function[KeyEvent, InputHandler.Result])
 }

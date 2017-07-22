@@ -21,7 +21,7 @@ object LiveEditionHeuristics {
   
   val closingPair: Heuristic = ca => consume(
     keyTyped({ 
-        case "{"|"("|"["|"<"|"\""|"'"|"`" => true
+        case "{"|"("|"["|"\""|"'"|"`" => true
         case other => false
       }: Predicate[String], KeyCombination.SHIFT_ANY, KeyCombination.ALT_ANY, KeyCombination.SHORTCUT_ANY),
     { evt =>
@@ -29,7 +29,6 @@ object LiveEditionHeuristics {
         case '{' => '}'
         case '(' => ')'
         case '[' => ']'
-        case '<' => '>'
         case '"' => '"'
         case '\'' => '\''
         case '`' => '`'
@@ -61,7 +60,7 @@ object LiveEditionHeuristics {
   
   val ignoreClosingPair: Heuristic = ca => process(
     keyTyped({ 
-        case "}"|")"|"]"|">"|"\""|"'"|"`" => true
+        case "}"|")"|"]"|"\""|"'"|"`" => true
         case other => false
       }: Predicate[String], KeyCombination.SHIFT_ANY, KeyCombination.ALT_ANY, KeyCombination.SHORTCUT_ANY),
     { evt =>
@@ -84,7 +83,6 @@ object LiveEditionHeuristics {
           case ('{', '}') |
             ('(', ')') |
             ('[', ']') |
-            ('<', '>') |
             ('"', '"') |
             ('\'', '\'') |
             ('`', '`') => ca.deleteNextChar()

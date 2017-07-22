@@ -2,6 +2,7 @@ package pomelo
 
 import better.files._
 import java.util.Collection
+import java.util.function.{Consumer}
 import java.util.concurrent.Executors
 import javafx.application.{Application, Platform}
 import javafx.concurrent.Task
@@ -10,10 +11,14 @@ import javafx.geometry.{Orientation, Pos}
 import javafx.scene.Scene
 import javafx.scene.control._
 import javafx.scene.layout._
+import javafx.scene.image.Image
+import javafx.scene.input.{KeyCode, KeyEvent, KeyCombination}
 import javafx.stage.{FileChooser, Popup}
 import org.fxmisc.richtext.{CodeArea, LineNumberFactory, MouseOverTextEvent}
 import org.fxmisc.flowless.VirtualizedScrollPane
 import org.fxmisc.richtext.model.{StyleSpansBuilder}
+import org.fxmisc.wellbehaved.event.EventPattern._
+import org.fxmisc.wellbehaved.event.InputMap, InputMap.consume
 import org.fxmisc.wellbehaved.event.Nodes
 import org.reactfx.EventStreams
 import scala.meta._
@@ -23,6 +28,7 @@ import org.scalafmt.config.{ScalafmtConfig, ScalafmtRunner}
 class Main extends Application {
   override def start(stage) = {
     stage.setTitle("Pomelo")
+    stage.getIcons.add(new Image("pomelo/pomelo.png"))
     
     val centerPane = new BorderPane
     
@@ -101,6 +107,17 @@ class Main extends Application {
       Scalafmt.format(codeArea.getText, conf).toEither.fold(ex => ex.printStackTrace, res => codeArea.replaceText(res))
     }
 
+    Nodes.addInputMap(codeArea, consume(
+        keyTyped("F", KeyCombination.ALT_DOWN, KeyCombination.SHIFT_DOWN),
+        { _ => formatCode.fire() }: Consumer[KeyEvent]): InputMap[KeyEvent])
+    
+    Nodes.addInputMap(codeArea, consume(
+        keyReleased(KeyCode.ENTER, KeyCombination.SHIFT_DOWN),
+        { _ => 
+          codeArea.fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", KeyCode.END.getName, KeyCode.END, false, false, false, false))
+          codeArea.fireEvent(new KeyEvent(KeyEvent.KEY_PRESSED, "", KeyCode.ENTER.getName, KeyCode.ENTER, false, false, false, false))
+        }: Consumer[KeyEvent]): InputMap[KeyEvent])
+    
     val boundHeuristics = LiveEditionHeuristics.All.map(_(codeArea))
     boundHeuristics.foreach(h => Nodes.addInputMap(codeArea, h))
     

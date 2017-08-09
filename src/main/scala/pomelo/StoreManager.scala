@@ -14,9 +14,8 @@ import java.util.zip.{GZIPInputStream, GZIPOutputStream}
  * 
  * Intended usage is to instantiate one store manager over a directory that works as its database, and then add files to it.
  */
-class StoreManager(databaseDir: File) {
+class StoreManager(databaseDir: File, val maxEntriesPerFile: Int = 20) {
 
-  private final val MaxEntriesPerFile = 20
   
   val logFile = databaseDir / "log"
   private val log: collection.mutable.Map[File, collection.mutable.TreeSet[LogEntry]] = readLog(logFile)
@@ -46,7 +45,7 @@ class StoreManager(databaseDir: File) {
    */
   def pendingWrites: Seq[(File, String)] = for {
     (file, entries) <- log.toSeq
-    DirtyUpdate(_, ts, content) = entries.firstKey
+    DirtyUpdate(_, _, content) = entries.firstKey
   } yield  file -> content
   
   /**
@@ -98,6 +97,19 @@ class StoreManager(databaseDir: File) {
     res
   }
   
+  /**
+   * Clean the log file of extra entites, making it stick to `maxEntriesPerFile`.
+   */
+  def prune(): Unit = {
+    val allEntries = log.valuesIterator.flatten.toArray
+    val baos = new ByteArrayOutputStream(allEntries.length * 1000) //approximation
+    allEntries foreach {
+      case fs: FileSaved => LogEntrySerializer.write(fs, baos)
+      case du: DirtyUpdate => LogEntrySerializer.write(du, baos)
+    }
+    logFile.sibling("log-pruned~").writeByteArray(baos.toByteArray).moveTo(logFile, true)
+  }
+  
   
   sealed trait RegistryHandle {
     def notifyContentChanged(content: String): Unit
@@ -111,7 +123,7 @@ class StoreManager(databaseDir: File) {
     logFile.appendByteArray(baos.toByteArray)(File.OpenOptions.append :+ StandardOpenOption.DSYNC)
     val entries = log.getOrElseUpdate(entry.file, collection.mutable.TreeSet.empty)
     entries += entry
-    val excess = entries.size - MaxEntriesPerFile
+    val excess = entries.size - maxEntriesPerFile
     if (excess > 0) (0 until excess) foreach (_ => entries -= entries.lastKey)
   }
   

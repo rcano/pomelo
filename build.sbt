@@ -2,7 +2,7 @@ name := "pomelo"
 organization := "pomelo"
 version := "0.1-SNAPSHOT"
 
-scalaVersion := "2.12.1"
+scalaVersion := "2.12.3"
 
 fork := true
 
@@ -13,6 +13,7 @@ libraryDependencies ++= Seq(
   "com.geirsson" %% "scalafmt-core" % "1.1.0",
   "com.geirsson" %% "scalafmt-cli" % "1.1.0",
   "com.chuusai" %% "shapeless" % "2.3.2",
+  "com.beachape" %% "enumeratum" % "1.5.10",
   //"org.fxmisc.richtext" % "richtextfx" % "0.7-M5",
   "com.github.pathikrit" %% "better-files" % "2.17.1",
   "org.scala-sbt" %% "zinc" % "1.0.0-X10"

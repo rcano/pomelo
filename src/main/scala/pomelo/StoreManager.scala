@@ -5,6 +5,7 @@ import enumeratum.values.{IntEnumEntry, IntEnum}
 import java.io.{DataInputStream, DataOutputStream, InputStream, OutputStream, ByteArrayOutputStream}
 import java.nio.channels.Channels
 import java.nio.file.StandardOpenOption
+import java.time.Instant
 import java.util.concurrent.ThreadFactory
 import java.util.zip.{GZIPInputStream, GZIPOutputStream}
 
@@ -47,6 +48,10 @@ class StoreManager(databaseDir: File, val maxEntriesPerFile: Int = 20) {
     (file, entries) <- log.toSeq
     DirtyUpdate(_, _, content) = entries.firstKey
   } yield  file -> content
+  
+  def historyFor(file: File): Seq[(String, Instant)] = log.get(file).fold(Seq.empty[(String, Instant)]) { entries =>
+    entries.collect { case du: DirtyUpdate => du.content -> Instant.ofEpochMilli(du.timestamp) }.toSeq
+  }
   
   /**
    * Registers a file in the StoreManager.
